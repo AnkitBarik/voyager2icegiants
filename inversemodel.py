@@ -102,6 +102,8 @@ class InverseModel:
             self.A[1::3, self.idx_H11] = -np.cos(theta) * np.sin(phi)
             self.A[2::3, self.idx_H11] = -np.cos(phi)
 
+        self.Ce_inv = self._build_Ce_inv(self.sigma, self.psi)
+        self.Lmbda = self._get_lambda(r=1.0)
 
     def _build_Ce_inv(self, sigma, psi):
         """
@@ -151,7 +153,7 @@ class InverseModel:
         else:
             return 1.0
 
-    def get_lambda(self, r=1.0):
+    def _get_lambda(self, r=1.0):
         Lmbda = np.zeros((self.ncoeffs, self.ncoeffs))
 
         for l in range(1, self.lmax+1):
@@ -187,94 +189,25 @@ class InverseModel:
             self.hlm = np.array(hlm)
 
     def solve(self, alpha=0.0, r=1.0):
-        self.Ce_inv = self._build_Ce_inv(self.sigma, self.psi)
-        Lmbda = self.get_lambda(r=r)
 
-        AtCeA = self.A.T @ self.Ce_inv @ self.A
-        AtCeb = self.A.T @ self.Ce_inv @ self.b
+        AtCeA = self.A.T @ (self.Ce_inv @ self.A)
+        AtCeb = self.A.T @ (self.Ce_inv @ self.b)
 
-        LHS = AtCeA + alpha * Lmbda
+        LHS = AtCeA + alpha * self.Lmbda
         coeffs = np.linalg.solve(LHS, AtCeb)
 
         self.coeffs = coeffs
         self.residuals = self.b - self.A @ coeffs
         self.misfit = self.residuals.T @ self.Ce_inv @ self.residuals
-        self.norm_value = coeffs.T @ Lmbda @ coeffs
+        self.norm_value = coeffs.T @ self.Lmbda @ coeffs
         self.extract_coeffs()
 
-    def trade_off_curve(self, alpha_arr, r=1.0):
-        misfits = []
-        norms = []
-        from tqdm import tqdm
-        for alpha in tqdm(alpha_arr):
-            self.solve(alpha=alpha, r=r)
-            misfits.append(self.misfit)
-            norms.append(self.norm_value)
-        return np.array(misfits), np.array(norms)
+    def resolution_matrix(self, alpha=0.0, r=1.0):
+        self.Ce_inv = self._build_Ce_inv(self.sigma, self.psi)
 
-    def find_optimal_alpha(self, alpha_arr, r=1.0):
-        """
-        Find optimal alpha using L-curve criterion (maximum curvature).
-        """
-        misfits, norms = self.trade_off_curve(alpha_arr,r=r)
+        AtCeA = self.A.T @ (self.Ce_inv @ self.A)
 
-        # Work in log-log space (standard for L-curve)
-        log_misfit = np.log10(misfits)
-        log_norm = np.log10(norms)
-
-        # Compute curvature using finite differences
-        # First derivatives
-        d_misfit = np.gradient(log_misfit)
-        d_norm = np.gradient(log_norm)
-
-        # Second derivatives
-        dd_misfit = np.gradient(d_misfit)
-        dd_norm = np.gradient(d_norm)
-
-        # Curvature formula: κ = |x'y'' - y'x''| / (x'^2 + y'^2)^(3/2)
-        curvature = np.abs(d_norm * dd_misfit - d_misfit * dd_norm) / \
-                    (d_norm**2 + d_misfit**2)**1.5
-
-        # Find index of maximum curvature (excluding endpoints)
-        idx_opt = np.argmax(curvature[2:-2]) + 2
-        alpha_opt = alpha_arr[idx_opt]
-
-        return alpha_opt, idx_opt, curvature
-
-
-    def plot_trade_off_curve(self, alpha_arr, r=1.0):
-        """
-        Plot trade-off curve with optimal alpha marked.
-        """
-        import matplotlib.pyplot as plt
-
-        misfits, norms = self.trade_off_curve(alpha_arr, r=r)
-        alpha_opt, idx_opt, curvature = self.find_optimal_alpha(alpha_arr, r=r)
-
-        fig, axes = plt.subplots(1, 2, figsize=(14, 5))
-
-        # L-curve
-        ax1 = axes[0]
-        ax1.loglog(norms, misfits, 'b-o', markersize=4)
-        ax1.loglog(norms[idx_opt], misfits[idx_opt], 'r*', markersize=15, label=f'Optimal α = {alpha_opt:.2e}')
-        ax1.set_xlabel('Model Norm', fontsize=14)
-        ax1.set_ylabel('Data Misfit', fontsize=14)
-        ax1.set_title('L-curve', fontsize=16)
-        ax1.legend()
-        ax1.grid(True, alpha=0.3)
-
-        # Curvature vs alpha
-        ax2 = axes[1]
-        ax2.semilogx(alpha_arr, curvature, 'b-o', markersize=4)
-        ax2.axvline(alpha_opt, color='r', linestyle='--', label=f'Optimal α = {alpha_opt:.2e}')
-        ax2.set_xlabel(r'$\alpha$', fontsize=14)
-        ax2.set_ylabel('Curvature', fontsize=14)
-        ax2.set_title('Curvature of L-curve', fontsize=16)
-        ax2.legend()
-        ax2.grid(True, alpha=0.3)
-
-        plt.tight_layout()
-        plt.show()
-
-        return alpha_opt
+        LHS = AtCeA + alpha * self.Lmbda
+        inv_LHS = np.linalg.inv(LHS)
+        self.R = inv_LHS @ AtCeA
 
