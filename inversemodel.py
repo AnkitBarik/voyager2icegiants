@@ -143,9 +143,11 @@ class InverseModel:
             return (l + 1) / (2*l + 1) * (1.0/r)**(2*l + 1)
         elif self.smoothing_norm == 'ohmic':
 
-            numerator = (l + 1) * (2*l + 1) * (2*l + 3) * (2*l + 4)
+            numerator = ( (l + 1) * (2*l + 1) * (2*l + 3) * (2*l + 4) *
+                         (self.b_rad - self.c_rad) * self.a_rad**(2*l + 4) )
+
             denominator = l * (self.b_rad**(2*l + 4) - self.c_rad**(2*l + 4))
-            return self.a_rad**(2*l + 4) * numerator / denominator * (self.b_rad - self.c_rad)**2
+            return numerator / denominator
         else:
             return 1.0
 
