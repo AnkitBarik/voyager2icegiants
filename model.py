@@ -4,6 +4,48 @@
 import numpy as np
 from scipy.special import sph_harm_y
 
+class ForwardModel:
+    def __init__(self, lmax, r, theta, phi, glm, hlm, idx_g, idx_h):
+        self.lmax = lmax
+        self.r = r
+        self.theta = theta
+        self.phi = phi
+        self.glm = glm
+        self.hlm = hlm
+        self.idx_g = idx_g
+        self.idx_h = idx_h
+        self.npoints = len(r)
+        self.ncoeffs = len(glm) + len(hlm)
+        self.A = np.zeros((3 * self.npoints, self.ncoeffs))
+
+        for l in range(1, lmax+1):
+            fac_l = (1/r)**(l+2)
+
+            for m in range(l+1):
+                ylm = sph_harm_y(l, m, theta, phi, diff_n=1)
+                dylmdth = ylm[1][..., 0]
+                dylmdphi = ylm[1][..., 1]
+                ylm = ylm[0]
+
+                if m == 0:
+                    Nlm = np.sqrt(4 * np.pi / (2*l+1))
+                else:
+                    Nlm = np.sqrt(8 * np.pi / (2*l+1)) * (-1)**m
+
+                self.A[0::3, self.idx_g[l, m]] =   np.real(fac_l * (l+1) * Nlm * ylm)
+                self.A[1::3, self.idx_g[l, m]] = - np.real(fac_l * Nlm * dylmdth)
+                self.A[2::3, self.idx_g[l, m]] = - np.real(fac_l * Nlm / np.sin(theta) * dylmdphi)
+
+                if m > 0:
+                    self.A[0::3, self.idx_h[l, m]] =   np.imag(fac_l * (l+1) * Nlm * ylm)
+                    self.A[1::3, self.idx_h[l, m]] = - np.imag(fac_l * Nlm * dylmdth)
+                    self.A[2::3, self.idx_h[l, m]] = - np.imag(fac_l * Nlm / np.sin(theta) * dylmdphi)
+
+        self.b      = self.A @ np.concatenate([self.glm, self.hlm])
+        self.br     = self.b[0::3]
+        self.btheta = self.b[1::3]
+        self.bphi   = self.b[2::3]
+
 class InverseModel:
     def __init__(self, lmax, r, theta, phi, br, btheta, bphi, smoothing_norm='Br2',
                  sigma=0.5, psi=0.05, a=1, b=0.8, c=0.7, include_external=False, debug=False):
@@ -211,3 +253,24 @@ class InverseModel:
         inv_LHS = np.linalg.inv(LHS)
         self.R = inv_LHS @ AtCeA
 
+def lcurve_knee(alpha_arr, misfit_arr, norm_arr, trim=2):
+    log_misfit = np.log(np.asarray(misfit_arr))
+    log_norm = np.log(np.asarray(norm_arr))
+    t = np.log(np.asarray(alpha_arr))
+
+    dx = np.gradient(log_misfit, t)
+    dy = np.gradient(log_norm, t)
+
+    ddx = np.gradient(dx, t)
+    ddy = np.gradient(dy, t)
+
+    curvature = np.abs(dx * ddy - dy * ddx) / np.maximum(
+        (dx**2 + dy**2)**1.5,
+        1e-300
+    )
+
+    curvature[:trim] = -np.inf
+    curvature[-trim:] = -np.inf
+
+    idx = int(np.argmax(curvature))
+    return idx, alpha_arr[idx], curvature
