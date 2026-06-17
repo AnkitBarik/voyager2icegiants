@@ -126,26 +126,27 @@ class InverseModel:
 
         # Fill external field columns
         if self.include_external:
-            # G10: external axial dipole
-            # Br = -cos(θ), Bθ = sin(θ), Bφ = 0
-            self.A[0::3, self.idx_G10] = -np.cos(theta)
+            # G10:
+            # Br = 0, Bθ = sin(θ), Bφ = 0
+            self.A[0::3, self.idx_G10] = 0
             self.A[1::3, self.idx_G10] = np.sin(theta)
             self.A[2::3, self.idx_G10] = 0.0
 
-            # G11: external equatorial dipole (cos φ component)
-            # Br = -sin(θ)cos(φ), Bθ = -cos(θ)cos(φ), Bφ = sin(φ)
-            self.A[0::3, self.idx_G11] = -np.sin(theta) * np.cos(phi)
+            # G11:
+            # Br = 0, Bθ = -cos(θ)cos(φ), Bφ = sin(θ) sin(φ)
+            self.A[0::3, self.idx_G11] = 0
             self.A[1::3, self.idx_G11] = -np.cos(theta) * np.cos(phi)
-            self.A[2::3, self.idx_G11] = np.sin(phi)
+            self.A[2::3, self.idx_G11] = -np.sin(theta) * np.sin(phi)
 
-            # H11: external equatorial dipole (sin φ component)
-            # Br = -sin(θ)sin(φ), Bθ = -cos(θ)sin(φ), Bφ = -cos(φ)
-            self.A[0::3, self.idx_H11] = -np.sin(theta) * np.sin(phi)
+            # H11:
+            # Br = 0, Bθ = -cos(θ)sin(φ), Bφ = -sin(θ) cos(φ)
+            self.A[0::3, self.idx_H11] = 0
             self.A[1::3, self.idx_H11] = -np.cos(theta) * np.sin(phi)
-            self.A[2::3, self.idx_H11] = -np.cos(phi)
+            self.A[2::3, self.idx_H11] = -np.sin(theta) *np.cos(phi)
 
         self.Ce_inv = self._build_Ce_inv(self.sigma, self.psi)
         self.Lmbda = self._get_lambda(r=1.0)
+        self.Lmbda_ohmic = self._build_Lmbda_ohmic(r=1.0)
 
     def _build_Ce_inv(self, sigma, psi):
         """
@@ -174,6 +175,24 @@ class InverseModel:
             blocks.append(numerator / denom_i)
 
         return block_diag(*blocks)
+
+    def _build_Lmbda_ohmic(self, r=1.0):
+        Lmbda_ohmic = np.zeros((self.ncoeffs, self.ncoeffs))
+
+        for l in range(1, self.lmax+1):
+            for m in range(l+1):
+                numerator = ( (l + 1) * (2*l + 1) * (2*l + 3) * (2*l + 4) *
+                         (self.b_rad - self.c_rad) * self.a_rad**(2*l + 4) )
+
+                denominator = l * (self.b_rad**(2*l + 4) - self.c_rad**(2*l + 4))
+                Lmbda_ohmic[self.idx_g[l, m], self.idx_g[l, m]] = numerator / denominator
+                if m > 0:
+                    Lmbda_ohmic[self.idx_h[l, m], self.idx_h[l, m]] = numerator / denominator
+
+        mu0 = 4*np.pi * 1e-7
+        sigma0 = 2e3
+        
+        return Lmbda_ohmic * 4 * np.pi / ( mu0**2 * sigma0)
 
     def _get_smoothing_norm(self, l, r=1.0):
 
@@ -230,20 +249,6 @@ class InverseModel:
             self.glm = np.array(glm)
             self.hlm = np.array(hlm)
 
-    def solve(self, alpha=0.0, r=1.0):
-
-        AtCeA = self.A.T @ (self.Ce_inv @ self.A)
-        AtCeb = self.A.T @ (self.Ce_inv @ self.b)
-
-        LHS = AtCeA + alpha * self.Lmbda
-        coeffs = np.linalg.solve(LHS, AtCeb)
-
-        self.coeffs = coeffs
-        self.residuals = self.b - self.A @ coeffs
-        self.misfit = self.residuals.T @ self.Ce_inv @ self.residuals
-        self.norm_value = coeffs.T @ self.Lmbda @ coeffs
-        self.extract_coeffs()
-
     def resolution_matrix(self, alpha=0.0, r=1.0):
         self.Ce_inv = self._build_Ce_inv(self.sigma, self.psi)
 
@@ -252,6 +257,26 @@ class InverseModel:
         LHS = AtCeA + alpha * self.Lmbda
         inv_LHS = np.linalg.inv(LHS)
         self.R = inv_LHS @ AtCeA
+
+    def solve(self, alpha=0.0, r=1.0):
+
+        AtCeA = self.A.T @ (self.Ce_inv @ self.A)
+        AtCeb = self.A.T @ (self.Ce_inv @ self.b)
+
+        LHS = AtCeA + alpha * self.Lmbda
+        coeffs = np.linalg.solve(LHS, AtCeb)
+
+        self.resolution_matrix(alpha=alpha, r=r)
+
+        norm_denom = 3*self.npoints - np.trace(self.R)
+
+        self.coeffs = coeffs
+        self.residuals = self.b - self.A @ coeffs
+        self.misfit = self.residuals.T @ self.Ce_inv @ self.residuals
+        self.misfit_norm = np.sqrt(self.misfit / norm_denom)
+        self.norm_value = coeffs.T @ self.Lmbda @ coeffs
+        self.norm_value_ohmic = ( coeffs.T @ self.Lmbda_ohmic @ coeffs ) / 0.34e15
+        self.extract_coeffs()
 
 def lcurve_knee(alpha_arr, misfit_arr, norm_arr, trim=2):
     log_misfit = np.log(np.asarray(misfit_arr))
