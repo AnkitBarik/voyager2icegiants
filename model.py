@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 
 import numpy as np
+from numpy.linalg import norm
 from scipy.special import sph_harm_y
 
 class ForwardModel:
@@ -299,3 +300,27 @@ def lcurve_knee(alpha_arr, misfit_arr, norm_arr, trim=2):
 
     idx = int(np.argmax(curvature))
     return idx, alpha_arr[idx], curvature
+
+def lcurve_distance(alpha_arr, misfit_arr, norm_arr):
+
+    misfit_arr = np.array(misfit_arr)
+    norm_arr   = np.array(norm_arr)
+    x = misfit_arr/misfit_arr.max()
+    y = norm_arr/norm_arr.max()
+
+    # half = len(x)//2
+
+    A = np.array([ x[0],y[0] ])
+    B = np.array([ x[-1],y[-1] ])
+    b = B - A
+    bhat = b/norm(b)
+    norms = np.zeros_like(x)
+
+    for i in range(len(x)):
+        P = np.array([x[i],y[i]])
+        p = P - A
+        norms[i] = norm( p - np.dot(p,b) * bhat)
+
+    idx = np.argmax(norms)
+
+    return idx, alpha_arr[idx]
