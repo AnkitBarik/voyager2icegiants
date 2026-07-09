@@ -61,11 +61,15 @@ class InverseModel:
         self.npoints = len(r)
         self.sigma   = sigma
         self.psi     = psi
-        self.smoothing_norm = smoothing_norm
         self.a_rad   = a
         self.b_rad   = b
         self.c_rad   = c
         self.include_external = include_external
+
+        if smoothing_norm not in ['B2', 'Br2', 'dBr2', 'energy', 'ohmic']:
+            print("Warning: smoothing_norm must be one of ['B2', 'Br2', 'dBr2', 'energy', 'ohmic'].\nDefaulting to '1' (Tikhonov).")
+        else:
+            self.smoothing_norm = smoothing_norm
 
         count = 0
         idx_g = -np.ones((lmax+1, lmax+1), dtype=int)
@@ -213,6 +217,7 @@ class InverseModel:
             denominator = l * (self.b_rad**(2*l + 4) - self.c_rad**(2*l + 4))
             return numerator / denominator
         else:
+            self.smoothing_norm = 'Tikhonov'
             return 1.0
 
     def _get_lambda(self, r=1.0):
