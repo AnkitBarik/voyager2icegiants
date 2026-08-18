@@ -1,0 +1,191 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?xml-model href="https://pds.nasa.gov/pds4/pds/v1/PDS4_PDS_1O00.sch" 
+    schematypens="http://purl.oclc.org/dsdl/schematron"?>
+<?xml-model href="https://pds.nasa.gov/pds4/msn/v1/PDS4_MSN_1O00_1310.sch"
+   schematypens="http://purl.oclc.org/dsdl/schematron"?>
+<?xml-model href="https://pds.nasa.gov/pds4/mission/vgr/v1/PDS4_VGR_1L00_1100.sch" 
+    schematypens="http://purl.oclc.org/dsdl/schematron"?>
+<Product_Collection
+    xmlns="http://pds.nasa.gov/pds4/pds/v1"
+    xmlns:msn="http://pds.nasa.gov/pds4/msn/v1"
+    xmlns:vgr="http://pds.nasa.gov/pds4/mission/vgr/v1"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="
+    http://pds.nasa.gov/pds4/pds/v1      https://pds.nasa.gov/pds4/pds/v1/PDS4_PDS_1O00.xsd
+    http://pds.nasa.gov/pds4/msn/v1       https://pds.nasa.gov/pds4/msn/v1/PDS4_MSN_1O00_1310.xsd
+    http://pds.nasa.gov/pds4/mission/vgr/v1      https://pds.nasa.gov/pds4/mission/vgr/v1/PDS4_VGR_1L00_1100.xsd
+    ">
+    <Identification_Area>
+        <logical_identifier>urn:nasa:pds:vg2-mag-uranus:data-u1-1.92s-asc</logical_identifier>
+        <version_id>1.0</version_id>
+        <title>VG2 MAG Uranus Longitude (U1) Coordinate 1.92s ASCII Data Collection</title>
+        <information_model_version>1.24.0.0</information_model_version>
+        <product_class>Product_Collection</product_class>
+        <Citation_Information>
+            <publication_year>1993</publication_year>
+            <doi>10.17189/kqdm-kc56</doi>
+            <description>
+                This collection contains ASCII data from the Voyager 2
+                Magnetometer in Uranus Longitude (U1) Coordinates during
+                the Uranus Encounter. The data have been averaged from the
+                60ms instrument sample rate to a 1.92s resampled rate. These
+                data cover 1986-01-24T07:00:00.005Z to 1986-01-25T03:59:58.001Z.
+            </description>
+            <List_Author>
+                <Person>
+                    <given_name>Norman</given_name>
+                    <family_name>Ness</family_name>
+                    <sequence_number>1</sequence_number>
+                    <Affiliation>
+                        <organization_name>NASA Goddard Space Flight Center</organization_name>
+                        <organization_rorid>https://ror.org/0171mag52</organization_rorid>
+                    </Affiliation>
+                </Person>
+            </List_Author>
+        </Citation_Information>
+        <Modification_History>
+            <Modification_Detail>
+                <modification_date>2026-02-26</modification_date>
+                <version_id>1.0</version_id>
+                <description>
+                    This is the original version of this collection in PDS4.
+                </description>
+            </Modification_Detail>
+        </Modification_History>
+    </Identification_Area>
+    <Context_Area>
+        <Time_Coordinates>
+            <start_date_time>1986-01-24T07:00:00.005Z</start_date_time>
+            <stop_date_time>1986-01-25T03:59:58.001Z</stop_date_time>
+        </Time_Coordinates>
+        <Primary_Result_Summary>
+            <purpose>Science</purpose>
+            <processing_level>Calibrated</processing_level>
+            <Science_Facets>
+                <domain>Magnetosphere</domain>
+                <discipline_name>Fields</discipline_name>
+                <facet1>Magnetic</facet1>
+                <facet2>Background</facet2>
+            </Science_Facets>
+        </Primary_Result_Summary>
+        <Investigation_Area>
+            <name>Voyager</name>
+            <type>Mission</type>
+            <Internal_Reference>
+                <lid_reference>urn:nasa:pds:context:investigation:mission.voyager</lid_reference>
+                <reference_type>collection_to_investigation</reference_type>
+            </Internal_Reference>
+        </Investigation_Area>
+        <Observing_System>
+            <Observing_System_Component>
+                <name>Voyager 2</name>
+                <type>Host</type>
+                <Internal_Reference>
+                    <lid_reference>urn:nasa:pds:context:instrument_host:spacecraft.vg2</lid_reference>
+                    <reference_type>is_instrument_host</reference_type>
+                </Internal_Reference>
+            </Observing_System_Component>
+            <Observing_System_Component>
+                <name>Triaxial Fluxgate Magnetometer (MAG)</name>
+                <type>Instrument</type>
+                <Internal_Reference>
+                    <lid_reference>urn:nasa:pds:context:instrument:vg2.mag</lid_reference>
+                    <reference_type>is_instrument</reference_type>
+                </Internal_Reference>
+            </Observing_System_Component>
+        </Observing_System>
+        <Target_Identification>
+            <name>Uranus</name>
+            <type>Planet</type>
+            <Internal_Reference>
+                <lid_reference>urn:nasa:pds:context:target:planet.uranus</lid_reference>
+                <reference_type>collection_to_target</reference_type>
+            </Internal_Reference>
+        </Target_Identification>
+        <Mission_Area>
+            <msn:Mission_Information>
+                <msn:mission_phase_name>Uranus Encounter</msn:mission_phase_name>
+                <msn:spacecraft_clock_start>26834:07:001</msn:spacecraft_clock_start>
+                <msn:spacecraft_clock_stop>26860:21:769</msn:spacecraft_clock_stop>
+                <msn:spacecraft_clock_partition>00</msn:spacecraft_clock_partition>
+            </msn:Mission_Information>
+        </Mission_Area>
+    </Context_Area>
+    <Reference_List>
+        <Internal_Reference>
+            <lid_reference>urn:nasa:pds:vg2-mag-uranus:document:data-mag-u1-uranus-desc</lid_reference>
+            <reference_type>collection_to_document</reference_type>
+        </Internal_Reference>
+        <Internal_Reference>
+            <lid_reference>urn:nasa:pds:vg2-mag-uranus:document:errata</lid_reference>
+            <reference_type>collection_to_errata</reference_type>
+        </Internal_Reference>
+        <Internal_Reference>
+            <lid_reference>urn:nasa:pds:vg2-uranus-traj-hg-48s:data</lid_reference>
+            <reference_type>collection_to_associate</reference_type>
+            <comment>
+                This collection contains Voyager 2 position vectors relative
+                to the Sun in both cartesian and spherical Heliographic coordinates
+                for the time period when Voyager was near Uranus but not within its
+                magnetosphere.
+            </comment>
+        </Internal_Reference>
+        <Internal_Reference>
+            <lid_reference>urn:nasa:pds:vg2-uranus-traj-u1-48s:data</lid_reference>
+            <reference_type>collection_to_associate</reference_type>
+            <comment>
+                This collection contains Voyager 2 position vectors relative
+                to Uranus in minus U1 coordinates. The U1 or Uranus West Longitude
+                System coordinate system is a planetocentric system fixed to Uranus
+                which is rotating with a 17.24 hour period.
+            </comment>
+        </Internal_Reference>
+        <Source_Product_External>
+            <external_source_product_identifier>VG2-U-MAG-4-RDR-U1COORDS-1.92SEC-V1.0</external_source_product_identifier>
+            <reference_type>data_to_calibrated_source_product</reference_type>
+            <doi>10.17189/1520031</doi>
+            <curating_facility>PDS Planetary Plasma Interactions Node</curating_facility>
+            <description>
+                This is the first version converted to PDS4. The DOI references the source PDS3 data set.  
+            </description>
+        </Source_Product_External>
+    </Reference_List>
+    <Collection>
+        <collection_type>Data</collection_type>
+        <description>
+            VG2 MAG Uranus Longitude (U1) Coordinate 1.92s ASCII Data Collection
+        </description>
+    </Collection>
+    <File_Area_Inventory>
+        <File>
+            <file_name>collection_data-u1-1.92s-asc_1.0.csv</file_name>
+            <creation_date_time>2025-09-03T13:57:03</creation_date_time>
+            <file_size unit="byte">132</file_size>
+            <md5_checksum>e7865f680172aed5dc85aa9a1a665751</md5_checksum>                 
+        </File>
+        <Inventory>
+            <offset unit="byte">0</offset>
+            <parsing_standard_id>PDS DSV 1</parsing_standard_id>
+            <records>2</records>
+            <record_delimiter>Carriage-Return Line-Feed</record_delimiter>
+            <field_delimiter>Comma</field_delimiter>
+            <Record_Delimited>
+                <fields>2</fields>
+                <groups>0</groups>
+                <Field_Delimited>
+                    <name>Member Status</name>
+                    <field_number>1</field_number>
+                    <data_type>ASCII_String</data_type>
+                    <maximum_field_length unit="byte">1</maximum_field_length>
+                </Field_Delimited>
+                <Field_Delimited>
+                    <name>LIDVID_LID</name>
+                    <field_number>2</field_number>
+                    <data_type>ASCII_LIDVID_LID</data_type>
+                    <maximum_field_length unit="byte">255</maximum_field_length>
+                </Field_Delimited>
+            </Record_Delimited>
+            <reference_type>inventory_has_member_product</reference_type>
+        </Inventory>
+    </File_Area_Inventory>
+</Product_Collection>

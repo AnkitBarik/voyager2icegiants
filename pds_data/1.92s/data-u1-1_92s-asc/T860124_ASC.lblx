@@ -1,0 +1,367 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?xml-model href="https://pds.nasa.gov/pds4/pds/v1/PDS4_PDS_1O00.sch" 
+    schematypens="http://purl.oclc.org/dsdl/schematron"?>
+<?xml-model href="https://pds.nasa.gov/pds4/msn/v1/PDS4_MSN_1O00_1310.sch"
+   schematypens="http://purl.oclc.org/dsdl/schematron"?>
+<?xml-model href="https://pds.nasa.gov/pds4/mission/vgr/v1/PDS4_VGR_1L00_1100.sch" 
+    schematypens="http://purl.oclc.org/dsdl/schematron"?>
+<Product_Observational
+   xmlns="http://pds.nasa.gov/pds4/pds/v1"
+   xmlns:msn="http://pds.nasa.gov/pds4/msn/v1"
+   xmlns:vgr="http://pds.nasa.gov/pds4/mission/vgr/v1"
+   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+   xsi:schemaLocation="
+       http://pds.nasa.gov/pds4/pds/v1      https://pds.nasa.gov/pds4/pds/v1/PDS4_PDS_1O00.xsd
+     http://pds.nasa.gov/pds4/msn/v1       https://pds.nasa.gov/pds4/msn/v1/PDS4_MSN_1O00_1310.xsd
+     http://pds.nasa.gov/pds4/mission/vgr/v1      https://pds.nasa.gov/pds4/mission/vgr/v1/PDS4_VGR_1L00_1100.xsd
+     ">
+    <Identification_Area>
+        <logical_identifier>urn:nasa:pds:vg2-mag-uranus:data-u1-1.92s-asc:t860124-asc</logical_identifier>
+        <version_id>1.0</version_id>
+        <title>VG2 MAG Uranus Longitude (U1) Coordinate 1.92s 1986-01-24 ASCII Data</title>
+        <information_model_version>1.24.0.0</information_model_version>
+        <product_class>Product_Observational</product_class>
+        <Citation_Information>
+            <publication_year>1993</publication_year>
+            <description>
+                This file contains ASCII data from the Voyager 2 
+                Magnetometer in Uranus Longitude (U1) Coordinates 
+                during the Uranus Encounter. The data have been averaged 
+                from the 60ms instrument sample rate to a 1.92s resampled rate. 
+                These data cover 1986-01-24T07:00:00.005Z to 1986-01-24T23:59:59.937Z.
+            </description>
+            <List_Author>
+                <Person>
+                    <given_name>Norman</given_name>
+                    <family_name>Ness</family_name>
+                    <sequence_number>1</sequence_number>
+                    <Affiliation>
+                        <organization_name>NASA Goddard Space Flight Center</organization_name>
+                        <organization_rorid>https://ror.org/0171mag52</organization_rorid>
+                    </Affiliation>
+                </Person>
+            </List_Author>
+        </Citation_Information>
+        <Modification_History>
+            <Modification_Detail>
+                <modification_date>2026-02-04</modification_date>
+                <version_id>1.0</version_id>
+                <description> 
+                    This product, T860124_ASC.TAB, was originally released 
+                    as part of the PDS3 VG2-U-MAG-4-RDR-U1COORDS-1.92SEC-V1.0 data set. 
+                    The metadata have been migrated to PDS4. The data themselves are unchanged.
+                </description>
+            </Modification_Detail>
+        </Modification_History>
+    </Identification_Area>
+    <Observation_Area>
+        <Time_Coordinates>
+            <start_date_time>1986-01-24T07:00:00.005Z</start_date_time>
+            <stop_date_time>1986-01-24T23:59:59.937Z</stop_date_time>
+        </Time_Coordinates>
+        <Primary_Result_Summary>
+            <purpose>Science</purpose>
+            <processing_level>Calibrated</processing_level>
+            <description>Voyager 2 Uranus Magnetic Field U1 Coordinate Data</description>
+            <Science_Facets>
+                <domain>Magnetosphere</domain>
+                <discipline_name>Fields</discipline_name>
+                <facet1>Magnetic</facet1>
+                <facet2>Background</facet2>
+            </Science_Facets>
+        </Primary_Result_Summary>
+        <Investigation_Area>
+            <name>Voyager</name>
+            <type>Mission</type>
+            <Internal_Reference>
+                <lid_reference>urn:nasa:pds:context:investigation:mission.voyager</lid_reference>
+                <reference_type>data_to_investigation</reference_type>
+            </Internal_Reference>
+        </Investigation_Area>
+        <Observing_System>
+            <Observing_System_Component>
+                <name>Voyager 2</name>
+                <type>Host</type>
+                <Internal_Reference>
+                    <lid_reference>urn:nasa:pds:context:instrument_host:spacecraft.vg2</lid_reference>
+                    <reference_type>is_instrument_host</reference_type>
+                </Internal_Reference>
+            </Observing_System_Component>
+            <Observing_System_Component>
+                <name>Triaxial Fluxgate Magnetometer (MAG)</name>
+                <type>Instrument</type>
+                <Internal_Reference>
+                    <lid_reference>urn:nasa:pds:context:instrument:vg2.mag</lid_reference>
+                    <reference_type>is_instrument</reference_type>
+                </Internal_Reference>
+            </Observing_System_Component>
+        </Observing_System>
+        <Target_Identification>
+            <name>Uranus</name>
+            <type>Planet</type>
+            <Internal_Reference>
+                <lid_reference>urn:nasa:pds:context:target:planet.uranus</lid_reference>
+                <reference_type>data_to_target</reference_type>
+            </Internal_Reference>
+        </Target_Identification>
+        <Mission_Area>
+            <msn:Mission_Information>
+                <msn:mission_phase_name>Uranus Encounter</msn:mission_phase_name>
+                <msn:spacecraft_clock_start>26834:07:001</msn:spacecraft_clock_start>
+                <msn:spacecraft_clock_stop>26855:22:001</msn:spacecraft_clock_stop>
+                <msn:spacecraft_clock_partition>00</msn:spacecraft_clock_partition>
+            </msn:Mission_Information>
+        </Mission_Area> 
+    </Observation_Area>
+    <Reference_List>
+        <Source_Product_External>
+            <external_source_product_identifier>VG2-U-MAG-4-RDR-U1COORDS-1.92SEC-V1.0:T860124-ASC:T860124_ASC.TAB</external_source_product_identifier>
+            <reference_type>data_to_calibrated_source_product</reference_type>
+            <doi>10.17189/1520031</doi>
+            <curating_facility>PDS Planetary Plasma Interactions Node</curating_facility>
+            <description>
+                This is the first version converted to PDS4. The DOI references the source PDS3 data set.
+            </description>
+        </Source_Product_External>
+    </Reference_List>
+    <File_Area_Observational>
+        <File>
+            <file_name>T860124_ASC.TAB</file_name>
+            <creation_date_time>2006-06-13T14:45:09</creation_date_time>
+            <file_size unit="byte">4536144</file_size>
+            <md5_checksum>5657d11acaf1f40b9bb1a583a0adaba4</md5_checksum> 
+        </File>
+        <Table_Character>
+            <name>VG2 MAG Uranus Resampled Heliographic (RTN) Coords 1.92s 1986-01-24 ASCII Data</name>
+            <offset unit="byte">0</offset>
+            <records>31501</records>
+            <record_delimiter>Carriage-Return Line-Feed</record_delimiter>
+            <Record_Character>
+                <fields>17</fields>
+                <groups>0</groups>
+                <record_length unit="byte">144</record_length>
+                <Field_Character>
+                    <name>PDSTIME</name>
+                    <field_number>1</field_number>
+                    <field_location unit="byte">1</field_location>
+                    <data_type>ASCII_Date_Time_YMD_UTC</data_type>
+                    <field_length unit="byte">24</field_length>
+                    <description>
+                        Date/Time string of the form                                            
+                        yyyy-mm-ddThh:mm:ss.sss.
+                    </description>
+                </Field_Character>
+                <Field_Character>
+                    <name>M65536</name>
+                    <field_number>2</field_number>
+                    <field_location unit="byte">26</field_location>
+                    <data_type>ASCII_Integer</data_type>
+                    <field_length unit="byte">5</field_length>
+                    <field_format>%5d</field_format>
+                    <unit>ticks</unit>
+                    <description>
+                        S/C Clock MOD 65536
+                    </description>
+                </Field_Character>
+                <Field_Character>
+                    <name>MOD60</name>
+                    <field_number>3</field_number>
+                    <field_location unit="byte">32</field_location>
+                    <data_type>ASCII_Integer</data_type>
+                    <field_length unit="byte">2</field_length>
+                    <field_format>%2d</field_format>
+                    <unit>ticks</unit>
+                    <description>
+                        S/C Clock MOD 60
+                    </description>
+                </Field_Character>
+                <Field_Character>
+                    <name>FDS_Line</name>
+                    <field_number>4</field_number>
+                    <field_location unit="byte">35</field_location>
+                    <data_type>ASCII_Integer</data_type>
+                    <field_length unit="byte">3</field_length>
+                    <field_format>%3d</field_format>
+                    <unit>ticks</unit>
+                    <description>
+                        S/C Clock Line Count
+                    </description>
+                </Field_Character>
+                <Field_Character>
+                    <name>MAG_ID</name>
+                    <field_number>5</field_number>
+                    <field_location unit="byte">39</field_location>
+                    <data_type>ASCII_Integer</data_type>
+                    <field_length unit="byte">1</field_length>
+                    <field_format>%1d</field_format>
+                    <description>
+                        Magnetometer ID
+                    </description>
+                </Field_Character>
+                <Field_Character>
+                    <name>BR</name>
+                    <field_number>6</field_number>
+                    <field_location unit="byte">41</field_location>
+                    <data_type>ASCII_Real</data_type>
+                    <field_length unit="byte">8</field_length>
+                    <field_format>%8.3f</field_format>
+                    <unit>nT</unit>
+                    <description>
+                        Radial MAG Component
+                    </description>
+                    <Special_Constants>
+                        <missing_constant>999.999</missing_constant>
+                    </Special_Constants>
+                </Field_Character>
+                <Field_Character>
+                    <name>BTheta</name>
+                    <field_number>7</field_number>
+                    <field_location unit="byte">50</field_location>
+                    <data_type>ASCII_Real</data_type>
+                    <field_length unit="byte">8</field_length>
+                    <field_format>%8.3f</field_format>
+                    <unit>nT</unit>
+                    <description>
+                        Southward MAG Component
+                    </description>
+                    <Special_Constants>
+                        <missing_constant>999.999</missing_constant>
+                    </Special_Constants>
+                </Field_Character>
+                <Field_Character>
+                    <name>BPhi</name>
+                    <field_number>8</field_number>
+                    <field_location unit="byte">59</field_location>
+                    <data_type>ASCII_Real</data_type>
+                    <field_length unit="byte">8</field_length>
+                    <field_format>%8.3f</field_format>
+                    <unit>nT</unit>
+                    <description>
+                        Azimuthal MAG Component</description>
+                    <Special_Constants>
+                        <missing_constant>999.999</missing_constant>
+                    </Special_Constants>
+                </Field_Character>
+                <Field_Character>
+                    <name>BMAG</name>
+                    <field_number>9</field_number>
+                    <field_location unit="byte">68</field_location>
+                    <data_type>ASCII_Real</data_type>
+                    <field_length unit="byte">8</field_length>
+                    <field_format>%8.3f</field_format>
+                    <unit>nT</unit>
+                    <description>
+                        Magnetic Field Magnitude
+                    </description>
+                    <Special_Constants>
+                        <missing_constant>999.999</missing_constant>
+                    </Special_Constants>
+                </Field_Character>
+                <Field_Character>
+                    <name>AVG_BMAG</name>
+                    <field_number>10</field_number>
+                    <field_location unit="byte">77</field_location>
+                    <data_type>ASCII_Real</data_type>
+                    <field_length unit="byte">8</field_length>
+                    <field_format>%8.3f</field_format>
+                    <unit>nT</unit>
+                    <description>
+                        Avg field magntiude over interval
+                    </description>
+                    <Special_Constants>
+                        <missing_constant>999.999</missing_constant>
+                    </Special_Constants>
+                </Field_Character>
+                <Field_Character>
+                    <name>DELTA</name>
+                    <field_number>11</field_number>
+                    <field_location unit="byte">86</field_location>
+                    <data_type>ASCII_Real</data_type>
+                    <field_length unit="byte">8</field_length>
+                    <field_format>%8.3f</field_format>
+                    <unit>deg</unit>
+                    <description>
+                        arcsin(BN/BMAG) - DELTA
+                    </description>
+                    <Special_Constants>
+                        <missing_constant>90.000</missing_constant>
+                    </Special_Constants>
+                </Field_Character>
+                <Field_Character>
+                    <name>LAMBDA</name>
+                    <field_number>12</field_number>
+                    <field_location unit="byte">95</field_location>
+                    <data_type>ASCII_Real</data_type>
+                    <field_length unit="byte">8</field_length>
+                    <field_format>%8.3f</field_format>
+                    <unit>deg</unit>
+                    <description>
+                        180.0 - atan(BT,-BR) - LAMBDA</description>
+                    <Special_Constants>
+                        <missing_constant>45.000</missing_constant>
+                    </Special_Constants>
+                </Field_Character>
+                <Field_Character>
+                    <name>RMS_RS</name>
+                    <field_number>13</field_number>
+                    <field_location unit="byte">104</field_location>
+                    <data_type>ASCII_Real</data_type>
+                    <field_length unit="byte">8</field_length>
+                    <field_format>%8.3f</field_format>
+                    <unit>nT</unit>
+                    <description>Root Mean Square of BR</description>
+                    <Special_Constants>
+                        <missing_constant>999.999</missing_constant>
+                    </Special_Constants>
+                </Field_Character>
+                <Field_Character>
+                    <name>RMS_BT</name>
+                    <field_number>14</field_number>
+                    <field_location unit="byte">113</field_location>
+                    <data_type>ASCII_Real</data_type>
+                    <field_length unit="byte">8</field_length>
+                    <field_format>%8.3f</field_format>
+                    <unit>nT</unit>
+                    <description>Root Mean Square of BTheta</description>
+                    <Special_Constants>
+                        <missing_constant>999.999</missing_constant>
+                    </Special_Constants>
+                </Field_Character>
+                <Field_Character>
+                    <name>RMS_BPhi</name>
+                    <field_number>15</field_number>
+                    <field_location unit="byte">122</field_location>
+                    <data_type>ASCII_Real</data_type>
+                    <field_length unit="byte">8</field_length>
+                    <field_format>%8.3f</field_format>
+                    <unit>nT</unit>
+                    <description>Root Mean Square of BPhi</description>
+                    <Special_Constants>
+                        <missing_constant>999.999</missing_constant>
+                    </Special_Constants>
+                </Field_Character>
+                <Field_Character>
+                    <name>NPTS</name>
+                    <field_number>16</field_number>
+                    <field_location unit="byte">131</field_location>
+                    <data_type>ASCII_Integer</data_type>
+                    <field_length unit="byte">3</field_length>
+                    <field_format>%3d</field_format>
+                    <description>
+                        Number of points in AVG Interval
+                    </description>
+                </Field_Character>
+                <Field_Character>
+                    <name>DFLAG</name>
+                    <field_number>17</field_number>
+                    <field_location unit="byte">135</field_location>
+                    <data_type>ASCII_String</data_type>
+                    <field_length unit="byte">8</field_length>
+                    <description>
+                        Data contamination flag
+                    </description>
+                </Field_Character>
+            </Record_Character>
+        </Table_Character>
+    </File_Area_Observational>
+</Product_Observational>

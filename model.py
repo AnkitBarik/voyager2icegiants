@@ -16,7 +16,12 @@ class ForwardModel:
         self.idx_g = idx_g
         self.idx_h = idx_h
         self.npoints = len(r)
-        self.ncoeffs = len(glm) + len(hlm)
+
+        # Columns of A are addressed by idx_g/idx_h, which interleave g and h
+        # as (g10, g11, h11, g20, ...). Sizing A by len(glm) + len(hlm)
+        # instead would leave the columns and the coefficient vector on two
+        # different orderings.
+        self.ncoeffs = max(idx_g.max(), idx_h.max()) + 1
         self.A = np.zeros((3 * self.npoints, self.ncoeffs))
 
         for l in range(1, lmax+1):
@@ -42,7 +47,20 @@ class ForwardModel:
                     self.A[1::3, self.idx_h[l, m]] = - np.imag(fac_l * Nlm * dylmdth)
                     self.A[2::3, self.idx_h[l, m]] = - np.imag(fac_l * Nlm / np.sin(theta) * dylmdphi)
 
-        self.b      = self.A @ np.concatenate([self.glm, self.hlm])
+        # glm and hlm are both flat and ordered by (l, m), with hlm carrying a
+        # placeholder zero at m = 0. Scatter them into the interleaved layout
+        # that the columns of A use.
+        coeffs = np.zeros(self.ncoeffs)
+        k = 0
+        for l in range(1, lmax+1):
+            for m in range(l+1):
+                coeffs[self.idx_g[l, m]] = self.glm[k]
+                if m > 0:
+                    coeffs[self.idx_h[l, m]] = self.hlm[k]
+                k += 1
+
+        self.coeffs = coeffs
+        self.b      = self.A @ coeffs
         self.br     = self.b[0::3]
         self.btheta = self.b[1::3]
         self.bphi   = self.b[2::3]
@@ -150,6 +168,12 @@ class InverseModel:
             self.A[2::3, self.idx_H11] = -np.sin(theta) *np.cos(phi)
 
         self.Ce_inv = self._build_Ce_inv(self.sigma, self.psi)
+
+        # Neither product depends on alpha, so build them once here rather
+        # than on every solve() call.
+        self.AtCeA = self.A.T @ self._apply_Ce_inv(self.A)
+        self.AtCeb = self.A.T @ self._apply_Ce_inv(self.b)
+
         self.Lmbda = self._get_lambda(r=1.0)
         self.Lmbda_ohmic = self._build_Lmbda_ohmic(r=1.0)
 
@@ -158,9 +182,10 @@ class InverseModel:
         Build block-diagonal Ce_inv per Holme & Bloxham 1995, eq. (4):
 
         C_e^{-1} = (I σ² + BB^T ψ²) / (σ²(σ² + B²ψ²))
-        """
 
-        from scipy.linalg import block_diag
+        The blocks are kept stacked as (npoints, 3, 3) rather than assembled
+        into a dense (3N, 3N) matrix, which would be 100 GB at N = 37263.
+        """
 
         sigma2 = sigma**2
         psi_rad = np.deg2rad(psi)
@@ -179,7 +204,22 @@ class InverseModel:
             numerator = sigma2 * I3 + psi2 * BBT
             blocks.append(numerator / denom_i)
 
-        return block_diag(*blocks)
+        return np.array(blocks)
+
+    def _apply_Ce_inv(self, X):
+        """
+        Ce_inv @ X, for X shaped (3N,) or (3N, ncoeffs).
+
+        Rows of X run [Br, Btheta, Bphi] for each point in turn, so splitting
+        the leading axis into (npoints, 3, ...) lines the rows up with their
+        own 3x3 block. The @ operator then multiplies each block by its own
+        slice of X.
+        """
+
+        if X.ndim == 1:
+            return (self.Ce_inv @ X.reshape(-1, 3, 1)).reshape(-1)
+
+        return (self.Ce_inv @ X.reshape(-1, 3, X.shape[1])).reshape(X.shape)
 
     def _build_Lmbda_ohmic(self, r=1.0):
         Lmbda_ohmic = np.zeros((self.ncoeffs, self.ncoeffs))
@@ -256,21 +296,16 @@ class InverseModel:
             self.hlm = np.array(hlm)
 
     def resolution_matrix(self, alpha=0.0, r=1.0):
-        self.Ce_inv = self._build_Ce_inv(self.sigma, self.psi)
+        LHS = self.AtCeA + alpha * self.Lmbda
 
-        AtCeA = self.A.T @ (self.Ce_inv @ self.A)
-
-        LHS = AtCeA + alpha * self.Lmbda
-        inv_LHS = np.linalg.inv(LHS)
-        self.R = inv_LHS @ AtCeA
+        # solve() rather than inv() @ AtCeA: same result, better conditioned
+        # at the small-alpha end of an L-curve.
+        self.R = np.linalg.solve(LHS, self.AtCeA)
 
     def solve(self, alpha=0.0, r=1.0):
 
-        AtCeA = self.A.T @ (self.Ce_inv @ self.A)
-        AtCeb = self.A.T @ (self.Ce_inv @ self.b)
-
-        LHS = AtCeA + alpha * self.Lmbda
-        coeffs = np.linalg.solve(LHS, AtCeb)
+        LHS = self.AtCeA + alpha * self.Lmbda
+        coeffs = np.linalg.solve(LHS, self.AtCeb)
 
         self.resolution_matrix(alpha=alpha, r=r)
 
@@ -278,7 +313,7 @@ class InverseModel:
 
         self.coeffs = coeffs
         self.residuals = self.b - self.A @ coeffs
-        self.misfit = self.residuals.T @ self.Ce_inv @ self.residuals
+        self.misfit = self.residuals @ self._apply_Ce_inv(self.residuals)
         self.misfit_norm = np.sqrt(self.misfit / norm_denom)
         self.norm_value = coeffs.T @ self.Lmbda @ coeffs
         self.norm_value_ohmic = ( coeffs.T @ self.Lmbda_ohmic @ coeffs ) / 0.34e15
@@ -308,12 +343,11 @@ def lcurve_knee(alpha_arr, misfit_arr, norm_arr, trim=2):
 
 def lcurve_distance(alpha_arr, misfit_arr, norm_arr):
 
-    misfit_arr = np.array(misfit_arr)
-    norm_arr   = np.array(norm_arr)
-    x = misfit_arr/misfit_arr.max()
-    y = norm_arr/norm_arr.max()
+    x = np.log(np.asarray(misfit_arr))
+    y = np.log(np.asarray(norm_arr))
 
-    # half = len(x)//2
+    x = (x - x.min()) / np.ptp(x)
+    y = (y - y.min()) / np.ptp(y)
 
     A = np.array([ x[0],y[0] ])
     B = np.array([ x[-1],y[-1] ])
@@ -324,7 +358,7 @@ def lcurve_distance(alpha_arr, misfit_arr, norm_arr):
     for i in range(len(x)):
         P = np.array([x[i],y[i]])
         p = P - A
-        norms[i] = norm( p - np.dot(p,b) * bhat)
+        norms[i] = norm( p - np.dot(p,bhat) * bhat)
 
     idx = np.argmax(norms)
 

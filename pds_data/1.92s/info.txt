@@ -1,0 +1,5 @@
+Retrieved from PDS-PPI IGPP UCLA on 2026-08-17T17:48:31Z
+
+You can download this data again with the URL:
+
+/ditdos/download?slot=/data/vg2-mag-uranus&files=data-u1-1_92s-asc
